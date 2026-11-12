@@ -1,0 +1,1097 @@
+/* ==========================================================================
+   Brass & Bristle Barbershop — landing page styles (mobile-first)
+
+   1. Design tokens   ← change these to re-theme the page for another niche
+   2. Base & reset
+   3. Layout helpers, typography, buttons
+   4. Header & navigation
+   5. Sections: hero, about, menu, gallery, reviews, location, contact
+   6. Footer
+   7. Reveal animation & reduced motion
+
+   Breakpoints (media queries can't read custom properties, keep in sync):
+   600px — small tablets, 768px — tablets, 900px — desktop nav (also in js/main.js)
+   ========================================================================== */
+
+/* 1. Design tokens
+   ========================================================================== */
+:root {
+  /* Brand colors (dark theme) */
+  --color-bg: #121212;            /* page background (charcoal) */
+  --color-surface: #222222;       /* cards, form */
+  --color-surface-alt: #1a1a1a;   /* every second section */
+  --color-text: #f3efe7;          /* main text (warm white) */
+  --color-muted: #b3aa9c;         /* secondary text */
+  --color-primary: #c9a45c;       /* buttons, prices, links (brass) */
+  --color-primary-dark: #dfbd78;  /* hover / pressed (lighter on a dark theme) */
+  --color-on-primary: #141414;    /* text on brass buttons */
+  --color-accent: #b23a3a;        /* decorative accents (barber-pole red) */
+  --color-on-accent: #ffffff;
+  --color-star: #c9a45c;          /* review stars */
+  --color-dark: #0b0b0b;          /* footer, hero fallback */
+  --color-on-dark: #f3efe7;       /* text on dark backgrounds */
+  --color-on-dark-muted: #b3aa9c;
+  --color-border: #333333;
+  --color-input-border: #7d776e;  /* ≥ 3:1 against the card background */
+  --color-error: #ff8f85;
+  --color-success: #a6dcb0;
+  --color-success-bg: #1d3524;
+  --color-focus: var(--color-primary);
+  --color-header-bg: rgba(18, 18, 18, 0.92);
+  --color-hero-eyebrow: var(--color-primary);
+  --color-logo-mark: var(--color-primary);
+  --hero-overlay: linear-gradient(90deg, rgba(10, 10, 10, 0.7) 0%, rgba(10, 10, 10, 0.1) 75%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.45) 0%, rgba(10, 10, 10, 0.85) 100%);
+
+  /* Map placeholder */
+  --map-bg: #2a2a2a;
+  --map-line: rgba(255, 255, 255, 0.08);
+  --map-road: rgba(255, 255, 255, 0.16);
+
+  /* Typography */
+  --font-heading: "Oswald", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --heading-weight: 600;
+  --heading-transform: uppercase;
+  --heading-letter-spacing: 0.02em;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-h3: 1.375rem;
+  --fs-h2: clamp(1.875rem, 1.4rem + 2vw, 2.875rem);
+  --fs-h1: clamp(2.5rem, 1.6rem + 4.4vw, 4.75rem);
+  --lh-tight: 1.1;
+  --lh-base: 1.65;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --section-padding: clamp(3.5rem, 2.5rem + 5vw, 6.5rem);
+
+  /* Shape & layout */
+  --container: 1120px;
+  --gutter: 1rem;
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-pill: 4px;            /* square-ish buttons suit the niche */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --header-height: 64px;
+  --transition: 200ms ease;
+
+  /* Images (paths are relative to this CSS file) */
+  --hero-image: url("../assets/hero.jpg");
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 1.5rem;
+    --header-height: 72px;
+  }
+}
+
+/* 2. Base & reset
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  /* Anchored sections stop below the sticky header */
+  scroll-padding-top: var(--header-height);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+input,
+button,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--heading-letter-spacing);
+  text-transform: var(--heading-transform);
+  text-wrap: balance;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Sections receive focus after in-page navigation (see main.js); no ring needed there */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 200;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-dark);
+  color: var(--color-on-dark);
+  border-radius: var(--radius-sm);
+  transform: translateY(-150%);
+}
+
+.skip-link:focus {
+  transform: none;
+  color: var(--color-on-dark);
+}
+
+/* 3. Layout helpers, typography, buttons
+   ========================================================================== */
+.container {
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--section-padding);
+}
+
+.section-alt {
+  background-color: var(--color-surface-alt);
+}
+
+.section-header {
+  max-width: 40rem;
+  margin-bottom: var(--space-6);
+}
+
+.section-header p:not(.eyebrow),
+.about-text p:not(.eyebrow),
+.contact-text > p:not(.eyebrow) {
+  color: var(--color-muted);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  margin-bottom: var(--space-4);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+}
+
+.eyebrow {
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-3) var(--space-5);
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition),
+    border-color var(--transition), transform var(--transition);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  color: var(--color-on-primary);
+}
+
+.btn-outline-light {
+  border-color: var(--color-on-dark);
+  color: var(--color-on-dark);
+}
+
+.btn-outline-light:hover {
+  background-color: var(--color-on-dark);
+  color: var(--color-dark);
+}
+
+/* 4. Header & navigation
+   ========================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-header-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+/* Added by main.js once the page is scrolled */
+.site-header.is-scrolled {
+  border-color: var(--color-border);
+  box-shadow: 0 4px 16px rgba(43, 29, 22, 0.06);
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--header-height);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.logo:hover {
+  color: var(--color-text);
+}
+
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  color: var(--color-logo-mark);
+}
+
+.nav-toggle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 48px;
+  height: 48px;
+  margin-right: -10px; /* align bars with the container edge */
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.nav-toggle-bar {
+  width: 24px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 2px;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+/* Bars morph into an "X" when the menu is open (7px = bar height + gap) */
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Without JS the toggle can't work, so the nav is simply shown below the logo */
+html:not(.js) .nav-toggle {
+  display: none;
+}
+
+.site-nav {
+  width: 100%;
+  padding-bottom: var(--space-4);
+}
+
+/* Mobile dropdown panel (only when JS can open it) */
+.js .site-nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  padding: var(--space-2) var(--gutter) var(--space-5);
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow);
+  /* visibility keeps hidden links out of the tab order */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--transition), transform var(--transition), visibility 0s linear 200ms;
+}
+
+.js .site-nav.is-open {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--transition), transform var(--transition), visibility 0s;
+}
+
+.nav-list a {
+  display: block;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.nav-list a:hover {
+  color: var(--color-primary);
+}
+
+.nav-cta {
+  width: 100%;
+  margin-top: var(--space-5);
+}
+
+@media (min-width: 900px) {
+  .nav-toggle {
+    display: none;
+  }
+
+  .site-nav,
+  .js .site-nav {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .nav-list {
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  .nav-list a {
+    position: relative;
+    padding: var(--space-2) 0;
+    border: 0;
+  }
+
+  /* Animated underline on hover / current focus */
+  .nav-list a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 2px;
+    background-color: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transition);
+  }
+
+  .nav-list a:hover::after,
+  .nav-list a:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .nav-cta {
+    width: auto;
+    min-height: 44px;
+    margin-top: 0;
+    padding: var(--space-2) var(--space-5);
+  }
+}
+
+/* 5. Sections
+   ========================================================================== */
+
+/* --- Hero --- */
+.hero {
+  --color-focus: var(--color-primary); /* visible focus ring on the dark background */
+  display: flex;
+  align-items: center;
+  min-height: clamp(520px, 88vh, 820px);
+  padding-block: var(--section-padding);
+  color: var(--color-on-dark);
+  background: var(--hero-overlay), var(--hero-image) center / cover no-repeat, var(--color-dark);
+}
+
+.hero-content {
+  max-width: 40rem;
+  animation: hero-in 800ms ease-out both;
+}
+
+.hero .eyebrow {
+  color: var(--color-hero-eyebrow);
+}
+
+.hero h1 {
+  font-size: var(--fs-h1);
+  margin-bottom: var(--space-5);
+}
+
+.hero-sub {
+  max-width: 34rem;
+  font-size: var(--fs-lg);
+  color: var(--color-on-dark-muted);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* --- About --- */
+.about-grid {
+  display: grid;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.about-media img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.about-text p + p {
+  margin-top: var(--space-4);
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.stat-value {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-primary);
+}
+
+.stat-label {
+  display: block;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--color-muted);
+}
+
+@media (min-width: 768px) {
+  .about-grid {
+    grid-template-columns: 5fr 6fr;
+    gap: var(--space-8);
+  }
+
+  .about-media img {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+/* --- Menu --- */
+.menu-categories {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.menu-category h3 {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.menu-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.menu-item {
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.menu-item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.menu-item-name {
+  font-size: var(--fs-lg);
+}
+
+.menu-item-price {
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.menu-item-desc {
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+}
+
+.menu-tag {
+  display: inline-block;
+  margin-left: var(--space-1);
+  padding: 0.125rem 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+  color: var(--color-on-accent);
+  background-color: var(--color-accent);
+  border-radius: var(--radius-pill);
+}
+
+@media (min-width: 768px) {
+  /* Coffee (longest list) takes the left column, the other two stack on the right */
+  .menu-categories {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6) var(--space-7);
+  }
+
+  .menu-category:first-child {
+    grid-row: span 2;
+  }
+}
+
+/* --- Gallery --- */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.gallery-item {
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+
+@media (hover: hover) {
+  .gallery-item:hover img {
+    transform: scale(1.04);
+  }
+}
+
+@media (min-width: 768px) {
+  .gallery {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  /* First photo is featured: 2×2 cells, the other five fill the 3×3 grid */
+  .gallery-item:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+
+/* --- Reviews --- */
+.reviews {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-6) var(--space-5);
+  background-color: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.review-stars {
+  font-size: 1.125rem;
+  letter-spacing: 0.15em;
+  color: var(--color-star);
+}
+
+.review blockquote {
+  flex-grow: 1;
+}
+
+.review figcaption {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.review-name {
+  font-weight: 600;
+}
+
+.review-meta {
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+}
+
+@media (min-width: 768px) {
+  .reviews {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- Hours & Location --- */
+.location-grid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.location-info {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.info-card {
+  padding: var(--space-6) var(--space-5);
+  background-color: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.info-card h3 {
+  margin-bottom: var(--space-4);
+}
+
+.hours div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.hours div:last-child {
+  border-bottom: 0;
+}
+
+.hours dt {
+  font-weight: 500;
+}
+
+.hours dd {
+  color: var(--color-muted);
+}
+
+address {
+  font-style: normal;
+  line-height: 1.8;
+}
+
+.info-note {
+  margin-top: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+}
+
+.map {
+  width: 100%;
+  min-height: 300px;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+/* Fake street grid drawn with gradients — replace with a real map embed */
+.map-placeholder {
+  display: grid;
+  place-items: center;
+  background-color: var(--map-bg);
+  background-image:
+    linear-gradient(115deg, transparent 47%, var(--map-road) 47%, var(--map-road) 53%, transparent 53%),
+    linear-gradient(90deg, var(--map-line) 3px, transparent 3px),
+    linear-gradient(var(--map-line) 3px, transparent 3px);
+  background-size: 100% 100%, 64px 64px, 64px 64px;
+  background-position: center, -2px -2px, -2px -2px;
+}
+
+.map-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-primary);
+}
+
+.map-pin span {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 768px) {
+  .location-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  .map {
+    min-height: 360px; /* stretches to the height of the info cards */
+  }
+}
+
+/* --- Contact --- */
+.contact-grid {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.contact-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.contact-list span {
+  display: inline-block;
+  min-width: 4rem;
+  font-weight: 600;
+}
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-5);
+  background-color: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.form-note {
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+}
+
+.form-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.form-field label {
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-input-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-field ::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.form-field input:focus-visible,
+.form-field textarea:focus-visible {
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+}
+
+.form-field [aria-invalid="true"] {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 1px var(--color-error);
+}
+
+.field-error {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-error);
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.form .btn {
+  width: 100%;
+}
+
+.form-status:empty {
+  display: none;
+}
+
+.form-status.is-success {
+  padding: var(--space-3) var(--space-4);
+  font-weight: 500;
+  color: var(--color-success);
+  background-color: var(--color-success-bg);
+  border-radius: var(--radius-sm);
+}
+
+@media (min-width: 600px) {
+  .form {
+    padding: var(--space-7) var(--space-6);
+  }
+
+  .form .btn {
+    width: auto;
+    justify-self: start;
+  }
+}
+
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 2fr 3fr;
+    gap: var(--space-8);
+  }
+}
+
+/* 6. Footer
+   ========================================================================== */
+.site-footer {
+  --color-focus: var(--color-primary);
+  padding-block: var(--space-8) var(--space-5);
+  color: var(--color-on-dark-muted);
+  background-color: var(--color-dark);
+}
+
+.site-footer a {
+  color: var(--color-on-dark-muted);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-on-dark);
+}
+
+.footer-grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.footer-brand p {
+  max-width: 22rem;
+  margin-top: var(--space-4);
+}
+
+.logo-light,
+.site-footer .logo-light:hover {
+  color: var(--color-on-dark);
+}
+
+.logo-light .logo-mark {
+  color: var(--color-logo-mark);
+}
+
+.footer-title {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-on-dark);
+}
+
+.footer-nav li + li {
+  margin-top: var(--space-1);
+}
+
+.footer-nav a {
+  display: inline-block;
+  padding-block: var(--space-1);
+}
+
+.social-list {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.social-link {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(250, 246, 240, 0.3);
+  border-radius: 50%;
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
+.site-footer .social-link {
+  color: var(--color-on-dark);
+}
+
+.site-footer .social-link:hover {
+  color: var(--color-on-primary);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  font-size: var(--fs-sm);
+  border-top: 1px solid rgba(250, 246, 240, 0.15);
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+/* 7. Reveal animation & reduced motion
+   ========================================================================== */
+
+/* main.js adds .is-visible when an element scrolls into view.
+   --reveal-delay is set by main.js for children of [data-reveal-stagger]. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 600ms ease, transform 600ms ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
